@@ -8,20 +8,38 @@
 
 import UIKit
 
-class PreviewCell: UICollectionViewCell {
-    @IBOutlet weak var previewImageView: UIImageView?
+class ThumbCell: UICollectionViewCell {
+    
+    @IBOutlet weak var thumbImageView: UIImageView?
+    @IBOutlet weak var titleLabel: UILabel?
     
     override func awakeFromNib() {
+        print("awakeFromNib")
         
+        let point = CGPointMake(CGRectGetMidX((thumbImageView?.bounds)!), CGRectGetMidY((thumbImageView?.bounds)!))
+        let radius = min(CGRectGetMidX((thumbImageView?.bounds)!), CGRectGetMidY((thumbImageView?.bounds)!))
+        let bezierPath = UIBezierPath.init(arcCenter: point,
+                                           radius: radius,
+                                           startAngle: 0,
+                                           endAngle: CGFloat(2*M_PI),
+                                           clockwise: true)
+        let shape = CAShapeLayer()
+        shape.path = bezierPath.CGPath
+        thumbImageView?.layer.mask = shape
+        
+        titleLabel!.backgroundColor = UIColor.clearColor()
+        titleLabel!.font = UIFont.systemFontOfSize(13)
+        titleLabel!.textColor = UIColor.darkGrayColor()
+        titleLabel?.textAlignment = NSTextAlignment.Center
     }
 }
 
-private let reuseIdentifier = "kPreviewCollectionCell"
+private let reuseIdentifier = "kThumbCollectionCellId"
 
-class PreviewViewController: UICollectionViewController {
+class ThumbViewController: UICollectionViewController {
     
-    struct PreviewContainer {
-        static let StoryboardId = "PreivewStoryboardId"
+    struct ThumbContainer {
+        static let StoryboardId = "ThumbStoryboardId"
     }
 
     override func viewDidLoad() {
@@ -33,7 +51,7 @@ class PreviewViewController: UICollectionViewController {
         // self.clearsSelectionOnViewWillAppear = false
 
         // Register cell classes
-        self.collectionView!.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        //self.collectionView!.registerClass(ThumbCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
     }
@@ -56,19 +74,19 @@ class PreviewViewController: UICollectionViewController {
     // MARK: UICollectionViewDataSource
 
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
 
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
         return 10
     }
 
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+        let cell = self.collectionView!.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! ThumbCell
     
+        cell.thumbImageView?.image = UIImage.init(named: "IMG_2635.jpg")
+        cell.titleLabel?.text = "cell-\(indexPath.row)"
         // Configure the cell
     
         return cell
